@@ -10,7 +10,7 @@ namespace Quras.Compiler.JVM
         private void _ConvertStLoc(JavaMethod method, OpCode src, NeoMethod to, int pos)
         {
             //push d
-            var c = _Convert1by1(Pure.VM.OpCode.DUPFROMALTSTACK, src, to);
+            var c = _Convert1by1(Quras.VM.OpCode.DUPFROMALTSTACK, src, to);
             if (c.debugcode == null)
             {
                 c.debugcode = "from StLoc -> 6 code";
@@ -19,8 +19,8 @@ namespace Quras.Compiler.JVM
             _InsertPush(pos, "", to);//add index
 
             _InsertPush(2, "", to);
-            _Insert1(Pure.VM.OpCode.ROLL, "", to);
-            _Insert1(Pure.VM.OpCode.SETITEM, "", to);
+            _Insert1(Quras.VM.OpCode.ROLL, "", to);
+            _Insert1(Quras.VM.OpCode.SETITEM, "", to);
         }
         private void _ConvertLdLoc(JavaMethod method, OpCode src, NeoMethod to, int pos)
         {
@@ -29,7 +29,7 @@ namespace Quras.Compiler.JVM
                 return;
             }
             //push d
-            var c = _Convert1by1(Pure.VM.OpCode.DUPFROMALTSTACK, src, to);
+            var c = _Convert1by1(Quras.VM.OpCode.DUPFROMALTSTACK, src, to);
             if (c.debugcode == null)
             {
                 c.debugcode = "from LdLoc -> 5 code";
@@ -39,7 +39,7 @@ namespace Quras.Compiler.JVM
 
 
             //pick
-            _Convert1by1(Pure.VM.OpCode.PICKITEM, null, to);
+            _Convert1by1(Quras.VM.OpCode.PICKITEM, null, to);
         }
         //private void _ConvertLdLocA(OpCode src, AntsMethod to, int pos)
         //{
@@ -48,7 +48,7 @@ namespace Quras.Compiler.JVM
         private void _ConvertLdArg(OpCode src, NeoMethod to, int pos)
         {
             //push d
-            var c = _Convert1by1(Pure.VM.OpCode.DEPTH, src, to);
+            var c = _Convert1by1(Quras.VM.OpCode.DEPTH, src, to);
             if (c.debugcode == null)
             {
                 c.debugcode = "from LdArg -> 5 code";
@@ -56,19 +56,19 @@ namespace Quras.Compiler.JVM
             }
             //push n
             _ConvertPush(pos, null, to);//翻转取参数顺序
-            //_Convert1by1(Pure.VM.OpCode.PUSHDATA1, null, to, int2Pushdata1bytes(to.paramtypes.Count - 1 - pos));
+            //_Convert1by1(Quras.VM.OpCode.PUSHDATA1, null, to, int2Pushdata1bytes(to.paramtypes.Count - 1 - pos));
             //d+n
-            _Convert1by1(Pure.VM.OpCode.ADD, null, to);
+            _Convert1by1(Quras.VM.OpCode.ADD, null, to);
 
             //push olddepth
-            _Convert1by1(Pure.VM.OpCode.FROMALTSTACK, null, to);
-            _Convert1by1(Pure.VM.OpCode.DUP, null, to);
-            _Convert1by1(Pure.VM.OpCode.TOALTSTACK, null, to);
+            _Convert1by1(Quras.VM.OpCode.FROMALTSTACK, null, to);
+            _Convert1by1(Quras.VM.OpCode.DUP, null, to);
+            _Convert1by1(Quras.VM.OpCode.TOALTSTACK, null, to);
             //(d+n)-olddepth
-            _Convert1by1(Pure.VM.OpCode.SUB, null, to);
+            _Convert1by1(Quras.VM.OpCode.SUB, null, to);
 
             //pick
-            _Convert1by1(Pure.VM.OpCode.PICK, null, to);
+            _Convert1by1(Quras.VM.OpCode.PICK, null, to);
         }
         public bool IsNonCall(JavaMethod method)
         {
@@ -176,7 +176,7 @@ namespace Quras.Compiler.JVM
         }
         private int _ConvertCall(JavaMethod method, OpCode src, NeoMethod to)
         {
-            _Convert1by1(Pure.VM.OpCode.NOP, src, to);
+            _Convert1by1(Quras.VM.OpCode.NOP, src, to);
             var cc = method.DeclaringType.classfile.constantpool;
             var c = cc[src.arg1] as javaloader.ClassFile.ConstantPoolItemMethodref;
             var name = c.Class + "::" + c.Name;
@@ -219,14 +219,14 @@ namespace Quras.Compiler.JVM
             int calltype = 0;
             string callname = "";
             byte[] callhash = null;
-            Pure.VM.OpCode callcode = Pure.VM.OpCode.NOP;
+            Quras.VM.OpCode callcode = Quras.VM.OpCode.NOP;
             if (IsNonCall(_javamethod))
             {
                 return 0;
             }
             else if (IsOpCall(_javamethod, src, out callname))
             {
-                if (System.Enum.TryParse<Pure.VM.OpCode>(callname, out callcode))
+                if (System.Enum.TryParse<Quras.VM.OpCode>(callname, out callcode))
                 {
                     calltype = 2;
                 }
@@ -253,7 +253,7 @@ namespace Quras.Compiler.JVM
                 if (name == "java.io.PrintStream::println")
                 {//drop 1;
                     Console.WriteLine("logstr.");
-                    _Convert1by1(Pure.VM.OpCode.DROP, src, to);
+                    _Convert1by1(Quras.VM.OpCode.DROP, src, to);
                     return 0;
                 }
                 else if (name == "java.math.BigInteger::<init>")
@@ -269,35 +269,35 @@ namespace Quras.Compiler.JVM
                 }
                 else if (name == "java.math.BigInteger::add")
                 {
-                    _Convert1by1(Pure.VM.OpCode.ADD, src, to);
+                    _Convert1by1(Quras.VM.OpCode.ADD, src, to);
                     return 0;
                 }
                 else if (name == "java.math.BigInteger::subtract")
                 {
-                    _Convert1by1(Pure.VM.OpCode.SUB, src, to);
+                    _Convert1by1(Quras.VM.OpCode.SUB, src, to);
                     return 0;
                 }
                 else if (name == "java.math.BigInteger::multiply")
                 {
-                    _Convert1by1(Pure.VM.OpCode.MUL, src, to);
+                    _Convert1by1(Quras.VM.OpCode.MUL, src, to);
                     return 0;
                 }
                 else if (name == "java.math.BigInteger::divide")
                 {
-                    _Convert1by1(Pure.VM.OpCode.DIV, src, to);
+                    _Convert1by1(Quras.VM.OpCode.DIV, src, to);
                     return 0;
                 }
                 else if (name == "java.math.BigInteger::mod")
                 {
-                    _Convert1by1(Pure.VM.OpCode.MOD, src, to);
+                    _Convert1by1(Quras.VM.OpCode.MOD, src, to);
                     return 0;
                 }
                 else if (name == "java.math.BigInteger::compareTo")
                 {
                     //need parse
-                    _Convert1by1(Pure.VM.OpCode.SUB, src, to);
-                    _Convert1by1(Pure.VM.OpCode.SIGN, null, to);
-                    //_Convert1by1(Pure.VM.OpCode.DEC, src, to);
+                    _Convert1by1(Quras.VM.OpCode.SUB, src, to);
+                    _Convert1by1(Quras.VM.OpCode.SIGN, null, to);
+                    //_Convert1by1(Quras.VM.OpCode.DEC, src, to);
                     return 0;
                 }
                 // todo: what about java.lang.String::contentEquals?
@@ -305,8 +305,8 @@ namespace Quras.Compiler.JVM
                     name == "java.lang.String::equals" ||
                     name == "kotlin.jvm.internal.Intrinsics::areEqual")
                 {
-                    _Convert1by1(Pure.VM.OpCode.NUMEQUAL, src, to);
-                    //_Convert1by1(Pure.VM.OpCode.DEC, src, to);
+                    _Convert1by1(Quras.VM.OpCode.NUMEQUAL, src, to);
+                    //_Convert1by1(Quras.VM.OpCode.DEC, src, to);
                     return 0;
                 }
                 else if (name == "java.math.BigInteger::valueOf" ||
@@ -327,7 +327,7 @@ namespace Quras.Compiler.JVM
                     name == "java.lang.Long::longValue" ||
                     name == "java.math.BigInteger::longValue")
                 {
-                    _Convert1by1(Pure.VM.OpCode.NOP, src, to);
+                    _Convert1by1(Quras.VM.OpCode.NOP, src, to);
                     return 0;
                 }
                 else if (name == "java.lang.String::hashCode")
@@ -338,12 +338,12 @@ namespace Quras.Compiler.JVM
                 else if (name == "java.lang.String::charAt")
                 {
                     _ConvertPush(1, src, to);
-                    _Convert1by1(Pure.VM.OpCode.SUBSTR, null, to);
+                    _Convert1by1(Quras.VM.OpCode.SUBSTR, null, to);
                     return 0;
                 }
                 else if (name == "java.lang.String::length")
                 {
-                    _Convert1by1(Pure.VM.OpCode.SIZE, null, to);
+                    _Convert1by1(Quras.VM.OpCode.SIZE, null, to);
                     return 0;
                 }
                 else if (c.Class == "java.lang.StringBuilder")
@@ -353,18 +353,18 @@ namespace Quras.Compiler.JVM
                 else if (name == "java.util.Arrays::equals" ||
                     name == "kotlin.jvm.internal.Intrinsics::areEqual")
                 {
-                    _Convert1by1(Pure.VM.OpCode.EQUAL, null, to);
+                    _Convert1by1(Quras.VM.OpCode.EQUAL, null, to);
                     return 0;
                 }
                 else if (name == "kotlin.jvm.internal.Intrinsics::checkParameterIsNotNull")
                 {
-                    _Convert1by1(Pure.VM.OpCode.DROP, null, to);
-                    _Convert1by1(Pure.VM.OpCode.DROP, null, to);
+                    _Convert1by1(Quras.VM.OpCode.DROP, null, to);
+                    _Convert1by1(Quras.VM.OpCode.DROP, null, to);
                     return 0;
                 }
                 else if (name == "kotlin.jvm.internal.Intrinsics::throwNpe")
                 {
-                    _Convert1by1(Pure.VM.OpCode.THROW, src, to);
+                    _Convert1by1(Quras.VM.OpCode.THROW, src, to);
                     return 0;
                 }
             }
@@ -381,19 +381,19 @@ namespace Quras.Compiler.JVM
             }
             else
             {//翻转参数入栈顺序
-                _Convert1by1(Pure.VM.OpCode.NOP, src, to);
+                _Convert1by1(Quras.VM.OpCode.NOP, src, to);
                 if (pcount <= 1)
                 {
 
                 }
                 else if (pcount == 2)
                 {
-                    _Insert1(Pure.VM.OpCode.SWAP, "swap 2 param", to);
+                    _Insert1(Quras.VM.OpCode.SWAP, "swap 2 param", to);
                 }
                 else if (pcount == 3)
                 {
                     _InsertPush(2, "swap 0 and 2 param", to);
-                    _Insert1(Pure.VM.OpCode.XSWAP, "", to);
+                    _Insert1(Quras.VM.OpCode.XSWAP, "", to);
                 }
                 else
                 {
@@ -401,26 +401,26 @@ namespace Quras.Compiler.JVM
                     {
                         int saveto = (pcount - 1 - i);
                         _InsertPush(saveto, "load" + saveto, to);
-                        _Insert1(Pure.VM.OpCode.PICK, "", to);
+                        _Insert1(Quras.VM.OpCode.PICK, "", to);
 
                         _InsertPush(i + 1, "load" + i + 1, to);
-                        _Insert1(Pure.VM.OpCode.PICK, "", to);
+                        _Insert1(Quras.VM.OpCode.PICK, "", to);
 
 
                         _InsertPush(saveto + 2, "save to" + saveto + 2, to);
-                        _Insert1(Pure.VM.OpCode.XSWAP, "", to);
-                        _Insert1(Pure.VM.OpCode.DROP, "", to);
+                        _Insert1(Quras.VM.OpCode.XSWAP, "", to);
+                        _Insert1(Quras.VM.OpCode.DROP, "", to);
 
                         _InsertPush(i + 1, "save to" + i + 1, to);
-                        _Insert1(Pure.VM.OpCode.XSWAP, "", to);
-                        _Insert1(Pure.VM.OpCode.DROP, "", to);
+                        _Insert1(Quras.VM.OpCode.XSWAP, "", to);
+                        _Insert1(Quras.VM.OpCode.DROP, "", to);
 
                     }
                 }
             }
             if (calltype == 1)
             {
-                var _c = _Convert1by1(Pure.VM.OpCode.CALL, null, to, new byte[] { 5, 0 });
+                var _c = _Convert1by1(Quras.VM.OpCode.CALL, null, to, new byte[] { 5, 0 });
                 _c.needfixfunc = true;
                 _c.srcfunc = name + c.Signature;
                 return 0;
@@ -438,12 +438,12 @@ namespace Quras.Compiler.JVM
                 outbytes[0] = (byte)bytes.Length;
                 Array.Copy(bytes, 0, outbytes, 1, bytes.Length);
                 //bytes.Prepend 函数在 dotnet framework 4.6 编译不过
-                _Convert1by1(Pure.VM.OpCode.SYSCALL, null, to, outbytes);
+                _Convert1by1(Quras.VM.OpCode.SYSCALL, null, to, outbytes);
                 return 0;
             }
             else if (calltype == 4)
             {
-                _Convert1by1(Pure.VM.OpCode.APPCALL, null, to, callhash);
+                _Convert1by1(Quras.VM.OpCode.APPCALL, null, to, callhash);
 
             }
 
@@ -456,13 +456,13 @@ namespace Quras.Compiler.JVM
             if (src.arg1 != 8)
             {
                 //this.logger.Log("_ConvertNewArray::not support type " + src.arg1 + " for array.");
-                _Convert1by1(Pure.VM.OpCode.NEWARRAY, src, to);
+                _Convert1by1(Quras.VM.OpCode.NEWARRAY, src, to);
                 return 0;
             }
             //bytearray
             var code = to.body_Codes.Last().Value;
             //we need a number
-            if (code.code > Pure.VM.OpCode.PUSH16)
+            if (code.code > Quras.VM.OpCode.PUSH16)
             {
                 throw new Exception("_ConvertNewArr::not support var lens for new byte[?].");
             }
@@ -555,7 +555,7 @@ namespace Quras.Compiler.JVM
             if (c.Name == "java.lang.StringBuilder")
             {
                 _ConvertPush(1, src, to);
-                _Insert1(Pure.VM.OpCode.NEWARRAY, "", to);
+                _Insert1(Quras.VM.OpCode.NEWARRAY, "", to);
             }
             else if (c.Name == "java.math.BigInteger")
             {
@@ -603,8 +603,8 @@ namespace Quras.Compiler.JVM
             }
             var codenextnext = method.body_Codes[n2];
             _ConvertPush(0, src, to);//和0比较
-            _Convert1by1(Pure.VM.OpCode.NUMNOTEQUAL, null, to);
-            var code = _Convert1by1(Pure.VM.OpCode.JMPIF, null, to, new byte[] { 0, 0 });
+            _Convert1by1(Quras.VM.OpCode.NUMNOTEQUAL, null, to);
+            var code = _Convert1by1(Quras.VM.OpCode.JMPIF, null, to, new byte[] { 0, 0 });
             code.needfix = true;
             code.srcaddr = src.addr + src.arg1;
             return 0;
@@ -613,36 +613,36 @@ namespace Quras.Compiler.JVM
         {
             if (callname == "<init>")
             {
-                _Convert1by1(Pure.VM.OpCode.SWAP, null, to);
-                _Convert1by1(Pure.VM.OpCode.DUP, null, to);
+                _Convert1by1(Quras.VM.OpCode.SWAP, null, to);
+                _Convert1by1(Quras.VM.OpCode.DUP, null, to);
 
                 _ConvertPush(0, null, to);
                 _ConvertPush(3, null, to);
-                _Convert1by1(Pure.VM.OpCode.ROLL, null, to);
-                _Convert1by1(Pure.VM.OpCode.SETITEM, null, to);
+                _Convert1by1(Quras.VM.OpCode.ROLL, null, to);
+                _Convert1by1(Quras.VM.OpCode.SETITEM, null, to);
                 return 0;
             }
             if (callname == "append")
             {
-                _Convert1by1(Pure.VM.OpCode.SWAP, null, to);//把对象数组换上来
-                _Convert1by1(Pure.VM.OpCode.DUP, null, to);
+                _Convert1by1(Quras.VM.OpCode.SWAP, null, to);//把对象数组换上来
+                _Convert1by1(Quras.VM.OpCode.DUP, null, to);
                 _ConvertPush(0, null, to);
-                _Convert1by1(Pure.VM.OpCode.PICKITEM, null, to);
+                _Convert1by1(Quras.VM.OpCode.PICKITEM, null, to);
 
                 _ConvertPush(2, null, to);
-                _Convert1by1(Pure.VM.OpCode.ROLL, null, to);
-                _Convert1by1(Pure.VM.OpCode.SWAP, null, to);//把对象数组换上来
-                _Convert1by1(Pure.VM.OpCode.CAT, null, to);
+                _Convert1by1(Quras.VM.OpCode.ROLL, null, to);
+                _Convert1by1(Quras.VM.OpCode.SWAP, null, to);//把对象数组换上来
+                _Convert1by1(Quras.VM.OpCode.CAT, null, to);
 
                 _ConvertPush(0, null, to);
-                _Convert1by1(Pure.VM.OpCode.SWAP, null, to);//把对象数组换上来
-                _Convert1by1(Pure.VM.OpCode.SETITEM, null, to);
+                _Convert1by1(Quras.VM.OpCode.SWAP, null, to);//把对象数组换上来
+                _Convert1by1(Quras.VM.OpCode.SETITEM, null, to);
                 return 0;
             }
             if (callname == "toString")
             {
                 _ConvertPush(0, null, to);
-                _Convert1by1(Pure.VM.OpCode.PICKITEM, null, to);
+                _Convert1by1(Quras.VM.OpCode.PICKITEM, null, to);
                 return 0;
             }
             return 0;
@@ -651,7 +651,7 @@ namespace Quras.Compiler.JVM
         //{
         //    var code = to.body_Codes.Last().Value;
         //    //we need a number
-        //    if (code.code > Pure.VM.OpCode.PUSH16)
+        //    if (code.code > Quras.VM.OpCode.PUSH16)
         //    {
         //        this.logger.Log("_ConvertNewArr::not support var lens for array.");
         //        return 0;
@@ -697,34 +697,34 @@ namespace Quras.Compiler.JVM
         //private int _ConvertInitObj(OpCode src, AntsMethod to)
         //{
         //    var type = (src.tokenUnknown as Mono.Cecil.TypeReference).Resolve();
-        //    _Convert1by1(Pure.VM.OpCode.NOP, src, to);//空白
+        //    _Convert1by1(Quras.VM.OpCode.NOP, src, to);//空白
         //    _ConvertPush(type.Fields.Count, null, to);//插入个数量
-        //    _Insert1(Pure.VM.OpCode.ARRAYNEW, null, to);
+        //    _Insert1(Quras.VM.OpCode.ARRAYNEW, null, to);
         //    //然後要將計算棧上的第一個值，寫入第二個值對應的pos
-        //    _Convert1by1(Pure.VM.OpCode.SWAP, null, to);//replace n to top
+        //    _Convert1by1(Quras.VM.OpCode.SWAP, null, to);//replace n to top
 
         //    //push d
-        //    _Convert1by1(Pure.VM.OpCode.DEPTH, null, to);
+        //    _Convert1by1(Quras.VM.OpCode.DEPTH, null, to);
 
-        //    _Convert1by1(Pure.VM.OpCode.DEC, null, to);//d 多了一位，剪掉
-        //    _Convert1by1(Pure.VM.OpCode.SWAP, null, to);//把n拿上來
+        //    _Convert1by1(Quras.VM.OpCode.DEC, null, to);//d 多了一位，剪掉
+        //    _Convert1by1(Quras.VM.OpCode.SWAP, null, to);//把n拿上來
         //    //push n
         //    //_ConvertPush(pos, null, to);有n了
         //    //d-n-1
-        //    _Convert1by1(Pure.VM.OpCode.SUB, null, to);
-        //    _Convert1by1(Pure.VM.OpCode.DEC, null, to);
+        //    _Convert1by1(Quras.VM.OpCode.SUB, null, to);
+        //    _Convert1by1(Quras.VM.OpCode.DEC, null, to);
 
         //    //push olddepth
-        //    _Convert1by1(Pure.VM.OpCode.FROMALTSTACK, null, to);
-        //    _Convert1by1(Pure.VM.OpCode.DUP, null, to);
-        //    _Convert1by1(Pure.VM.OpCode.TOALTSTACK, null, to);
+        //    _Convert1by1(Quras.VM.OpCode.FROMALTSTACK, null, to);
+        //    _Convert1by1(Quras.VM.OpCode.DUP, null, to);
+        //    _Convert1by1(Quras.VM.OpCode.TOALTSTACK, null, to);
         //    //(d-n-1)-olddepth
-        //    _Convert1by1(Pure.VM.OpCode.SUB, null, to);
+        //    _Convert1by1(Quras.VM.OpCode.SUB, null, to);
 
         //    //swap d-n-1 and top
-        //    _Convert1by1(Pure.VM.OpCode.XSWAP, null, to);
+        //    _Convert1by1(Quras.VM.OpCode.XSWAP, null, to);
         //    //drop top
-        //    _Convert1by1(Pure.VM.OpCode.DROP, null, to);
+        //    _Convert1by1(Quras.VM.OpCode.DROP, null, to);
         //    return 0;
         //}
         //private int _ConvertStfld(OpCode src, AntsMethod to)
@@ -734,34 +734,34 @@ namespace Quras.Compiler.JVM
         //    var id = type.Fields.IndexOf(field);
         //    if (id < 0)
         //        throw new Exception("impossible.");
-        //    _Convert1by1(Pure.VM.OpCode.NOP, src, to);//空白
+        //    _Convert1by1(Quras.VM.OpCode.NOP, src, to);//空白
 
-        //    _Convert1by1(Pure.VM.OpCode.SWAP, null, to);//把n拿上來 n 和 item
+        //    _Convert1by1(Quras.VM.OpCode.SWAP, null, to);//把n拿上來 n 和 item
         //    //push d
-        //    _Convert1by1(Pure.VM.OpCode.DEPTH, src, to);
-        //    _Convert1by1(Pure.VM.OpCode.DEC, null, to);//d 多了一位，剪掉
-        //    _Convert1by1(Pure.VM.OpCode.SWAP, null, to);//把n拿上來
+        //    _Convert1by1(Quras.VM.OpCode.DEPTH, src, to);
+        //    _Convert1by1(Quras.VM.OpCode.DEC, null, to);//d 多了一位，剪掉
+        //    _Convert1by1(Quras.VM.OpCode.SWAP, null, to);//把n拿上來
 
         //    //push n
         //    //_ConvertPush(pos, null, to);有n了
         //    //d-n-1
-        //    _Convert1by1(Pure.VM.OpCode.SUB, null, to);
-        //    _Convert1by1(Pure.VM.OpCode.DEC, null, to);
+        //    _Convert1by1(Quras.VM.OpCode.SUB, null, to);
+        //    _Convert1by1(Quras.VM.OpCode.DEC, null, to);
 
         //    //push olddepth
-        //    _Convert1by1(Pure.VM.OpCode.FROMALTSTACK, null, to);
-        //    _Convert1by1(Pure.VM.OpCode.DUP, null, to);
-        //    _Convert1by1(Pure.VM.OpCode.TOALTSTACK, null, to);
+        //    _Convert1by1(Quras.VM.OpCode.FROMALTSTACK, null, to);
+        //    _Convert1by1(Quras.VM.OpCode.DUP, null, to);
+        //    _Convert1by1(Quras.VM.OpCode.TOALTSTACK, null, to);
         //    //(d-n-1)-olddepth
-        //    _Convert1by1(Pure.VM.OpCode.SUB, null, to);
+        //    _Convert1by1(Quras.VM.OpCode.SUB, null, to);
 
         //    //pick
-        //    _Convert1by1(Pure.VM.OpCode.PICK, null, to);
+        //    _Convert1by1(Quras.VM.OpCode.PICK, null, to);
 
 
-        //    _Convert1by1(Pure.VM.OpCode.SWAP, null, to);//把item 拿上來 
+        //    _Convert1by1(Quras.VM.OpCode.SWAP, null, to);//把item 拿上來 
         //    _ConvertPush(id, null, to);
-        //    _Convert1by1(Pure.VM.OpCode.ARRAYSETITEM, null, to);//修改值
+        //    _Convert1by1(Quras.VM.OpCode.ARRAYSETITEM, null, to);//修改值
         //    return 0;
         //}
 
@@ -773,7 +773,7 @@ namespace Quras.Compiler.JVM
         //    if (id < 0)
         //        throw new Exception("impossible.");
         //    _ConvertPush(id, src, to);
-        //    _Convert1by1(Pure.VM.OpCode.PICKITEM, null, to);//修改值
+        //    _Convert1by1(Quras.VM.OpCode.PICKITEM, null, to);//修改值
 
         //    return 0;
         //}

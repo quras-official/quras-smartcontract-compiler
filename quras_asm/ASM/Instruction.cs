@@ -3,7 +3,7 @@ using System.Globalization;
 using System.Numerics;
 using System.Text;
 
-using Pure.VM;
+using Quras.VM;
 
 namespace Quras.Compiler.ASM
 {

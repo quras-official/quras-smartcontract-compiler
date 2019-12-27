@@ -154,7 +154,7 @@ namespace Quras.Compiler
 
     public class QurasCode
     {
-        public Pure.VM.OpCode code = Pure.VM.OpCode.NOP;
+        public Quras.VM.OpCode code = Quras.VM.OpCode.NOP;
         public int addr;
         public byte[] bytes;
         public string debugcode;

@@ -8,7 +8,7 @@ namespace Quras.Compiler.MSIL
     /// </summary>
     public partial class ModuleConverter
     {
-        private QurasCode _Insert1(Pure.VM.OpCode code, string comment, NeoMethod to, byte[] data = null)
+        private QurasCode _Insert1(Quras.VM.OpCode code, string comment, NeoMethod to, byte[] data = null)
         {
             QurasCode _code = new QurasCode();
             int startaddr = addr;
@@ -33,24 +33,24 @@ namespace Quras.Compiler.MSIL
 
         private QurasCode _InsertPush(byte[] data, string comment, NeoMethod to)
         {
-            if (data.Length == 0) return _Insert1(Pure.VM.OpCode.PUSH0, comment, to);
-            if (data.Length <= 75) return _Insert1((Pure.VM.OpCode)data.Length, comment, to, data);
+            if (data.Length == 0) return _Insert1(Quras.VM.OpCode.PUSH0, comment, to);
+            if (data.Length <= 75) return _Insert1((Quras.VM.OpCode)data.Length, comment, to, data);
             byte prefixLen;
-            Pure.VM.OpCode code;
+            Quras.VM.OpCode code;
             if (data.Length <= byte.MaxValue)
             {
                 prefixLen = sizeof(byte);
-                code = Pure.VM.OpCode.PUSHDATA1;
+                code = Quras.VM.OpCode.PUSHDATA1;
             }
             else if (data.Length <= ushort.MaxValue)
             {
                 prefixLen = sizeof(ushort);
-                code = Pure.VM.OpCode.PUSHDATA2;
+                code = Quras.VM.OpCode.PUSHDATA2;
             }
             else
             {
                 prefixLen = sizeof(uint);
-                code = Pure.VM.OpCode.PUSHDATA4;
+                code = Quras.VM.OpCode.PUSHDATA4;
             }
             byte[] bytes = new byte[data.Length + prefixLen];
             Buffer.BlockCopy(BitConverter.GetBytes(data.Length), 0, bytes, 0, prefixLen);
@@ -60,13 +60,13 @@ namespace Quras.Compiler.MSIL
 
         private QurasCode _InsertPush(int i, string comment, NeoMethod to)
         {
-            if (i == 0) return _Insert1(Pure.VM.OpCode.PUSH0, comment, to);
-            if (i == -1) return _Insert1(Pure.VM.OpCode.PUSHM1, comment, to);
-            if (i > 0 && i <= 16) return _Insert1((Pure.VM.OpCode)(byte)i + 0x50, comment, to);
+            if (i == 0) return _Insert1(Quras.VM.OpCode.PUSH0, comment, to);
+            if (i == -1) return _Insert1(Quras.VM.OpCode.PUSHM1, comment, to);
+            if (i > 0 && i <= 16) return _Insert1((Quras.VM.OpCode)(byte)i + 0x50, comment, to);
             return _InsertPush(((BigInteger)i).ToByteArray(), comment, to);
         }
 
-        private QurasCode _Convert1by1(Pure.VM.OpCode code, OpCode src, NeoMethod to, byte[] data = null)
+        private QurasCode _Convert1by1(Quras.VM.OpCode code, OpCode src, NeoMethod to, byte[] data = null)
         {
             QurasCode _code = new QurasCode();
             int startaddr = addr;
@@ -96,24 +96,24 @@ namespace Quras.Compiler.MSIL
 
         private QurasCode _ConvertPush(byte[] data, OpCode src, NeoMethod to)
         {
-            if (data.Length == 0) return _Convert1by1(Pure.VM.OpCode.PUSH0, src, to);
-            if (data.Length <= 75) return _Convert1by1((Pure.VM.OpCode)data.Length, src, to, data);
+            if (data.Length == 0) return _Convert1by1(Quras.VM.OpCode.PUSH0, src, to);
+            if (data.Length <= 75) return _Convert1by1((Quras.VM.OpCode)data.Length, src, to, data);
             byte prefixLen;
-            Pure.VM.OpCode code;
+            Quras.VM.OpCode code;
             if (data.Length <= byte.MaxValue)
             {
                 prefixLen = sizeof(byte);
-                code = Pure.VM.OpCode.PUSHDATA1;
+                code = Quras.VM.OpCode.PUSHDATA1;
             }
             else if (data.Length <= ushort.MaxValue)
             {
                 prefixLen = sizeof(ushort);
-                code = Pure.VM.OpCode.PUSHDATA2;
+                code = Quras.VM.OpCode.PUSHDATA2;
             }
             else
             {
                 prefixLen = sizeof(uint);
-                code = Pure.VM.OpCode.PUSHDATA4;
+                code = Quras.VM.OpCode.PUSHDATA4;
             }
             byte[] bytes = new byte[data.Length + prefixLen];
             Buffer.BlockCopy(BitConverter.GetBytes(data.Length), 0, bytes, 0, prefixLen);
@@ -123,9 +123,9 @@ namespace Quras.Compiler.MSIL
 
         private QurasCode _ConvertPush(long i, OpCode src, NeoMethod to)
         {
-            if (i == 0) return _Convert1by1(Pure.VM.OpCode.PUSH0, src, to);
-            if (i == -1) return _Convert1by1(Pure.VM.OpCode.PUSHM1, src, to);
-            if (i > 0 && i <= 16) return _Convert1by1((Pure.VM.OpCode)(byte)i + 0x50, src, to);
+            if (i == 0) return _Convert1by1(Quras.VM.OpCode.PUSH0, src, to);
+            if (i == -1) return _Convert1by1(Quras.VM.OpCode.PUSHM1, src, to);
+            if (i > 0 && i <= 16) return _Convert1by1((Quras.VM.OpCode)(byte)i + 0x50, src, to);
             return _ConvertPush(((BigInteger)i).ToByteArray(), src, to);
         }
         private int _ConvertPushI8WithConv(ILMethod from, long i, OpCode src, NeoMethod to)
@@ -231,8 +231,8 @@ namespace Quras.Compiler.MSIL
         private void _insertBeginCode(ILMethod from, NeoMethod to)
         {
             ////压入深度临时栈
-            //_Insert1(Pure.VM.OpCode.DEPTH, "record depth.", to);
-            //_Insert1(Pure.VM.OpCode.TOALTSTACK, "", to);
+            //_Insert1(Quras.VM.OpCode.DEPTH, "record depth.", to);
+            //_Insert1(Quras.VM.OpCode.TOALTSTACK, "", to);
 
             ////初始化临时槽位位置
             //foreach (var src in from.body_Variables)
@@ -243,68 +243,68 @@ namespace Quras.Compiler.MSIL
 
             //新玩法，用一个数组，应该能减少指令数量
             _InsertPush(from.paramtypes.Count + from.body_Variables.Count, "begincode", to);
-            _Insert1(Pure.VM.OpCode.NEWARRAY, "", to);
-            _Insert1(Pure.VM.OpCode.TOALTSTACK, "", to);
+            _Insert1(Quras.VM.OpCode.NEWARRAY, "", to);
+            _Insert1(Quras.VM.OpCode.TOALTSTACK, "", to);
             //移动参数槽位
             for (var i = 0; i < from.paramtypes.Count; i++)
             {
                 //getarray
-                _Insert1(Pure.VM.OpCode.FROMALTSTACK, "set param:" + i, to);
-                _Insert1(Pure.VM.OpCode.DUP, null, to);
-                _Insert1(Pure.VM.OpCode.TOALTSTACK, null, to);
+                _Insert1(Quras.VM.OpCode.FROMALTSTACK, "set param:" + i, to);
+                _Insert1(Quras.VM.OpCode.DUP, null, to);
+                _Insert1(Quras.VM.OpCode.TOALTSTACK, null, to);
 
                 _InsertPush(i, "", to); //Array pos
 
                 _InsertPush(2, "", to); //Array item
-                _Insert1(Pure.VM.OpCode.ROLL, null, to);
+                _Insert1(Quras.VM.OpCode.ROLL, null, to);
 
-                _Insert1(Pure.VM.OpCode.SETITEM, null, to);
+                _Insert1(Quras.VM.OpCode.SETITEM, null, to);
             }
         }
 
         private void _insertEndCode(ILMethod from, NeoMethod to, OpCode src)
         {
             ////占位不谢
-            _Convert1by1(Pure.VM.OpCode.NOP, src, to);
+            _Convert1by1(Quras.VM.OpCode.NOP, src, to);
 
             ////移除临时槽位
             ////drop body_Variables
             //for (var i = 0; i < from.body_Variables.Count; i++)
             //{
-            //    _Insert1(Pure.VM.OpCode.DEPTH, "body_Variables drop", to, null);
-            //    _Insert1(Pure.VM.OpCode.DEC, null, to, null);
+            //    _Insert1(Quras.VM.OpCode.DEPTH, "body_Variables drop", to, null);
+            //    _Insert1(Quras.VM.OpCode.DEC, null, to, null);
 
             //    //push olddepth
-            //    _Insert1(Pure.VM.OpCode.FROMALTSTACK, null, to);
-            //    _Insert1(Pure.VM.OpCode.DUP, null, to);
-            //    _Insert1(Pure.VM.OpCode.TOALTSTACK, null, to);
+            //    _Insert1(Quras.VM.OpCode.FROMALTSTACK, null, to);
+            //    _Insert1(Quras.VM.OpCode.DUP, null, to);
+            //    _Insert1(Quras.VM.OpCode.TOALTSTACK, null, to);
             //    //(d-1)-olddepth
-            //    _Insert1(Pure.VM.OpCode.SUB, null, to);
+            //    _Insert1(Quras.VM.OpCode.SUB, null, to);
 
-            //    _Insert1(Pure.VM.OpCode.XDROP, null, to, null);
+            //    _Insert1(Quras.VM.OpCode.XDROP, null, to, null);
             //}
             ////移除参数槽位
             //for (var i = 0; i < from.paramtypes.Count; i++)
             //{
             //    //d
-            //    _Insert1(Pure.VM.OpCode.DEPTH, "param drop", to, null);
+            //    _Insert1(Quras.VM.OpCode.DEPTH, "param drop", to, null);
 
             //    //push olddepth
-            //    _Insert1(Pure.VM.OpCode.FROMALTSTACK, null, to);
-            //    _Insert1(Pure.VM.OpCode.DUP, null, to);
-            //    _Insert1(Pure.VM.OpCode.DEC, null, to);//深度-1
-            //    _Insert1(Pure.VM.OpCode.TOALTSTACK, null, to);
+            //    _Insert1(Quras.VM.OpCode.FROMALTSTACK, null, to);
+            //    _Insert1(Quras.VM.OpCode.DUP, null, to);
+            //    _Insert1(Quras.VM.OpCode.DEC, null, to);//深度-1
+            //    _Insert1(Quras.VM.OpCode.TOALTSTACK, null, to);
 
             //    //(d)-olddepth
-            //    _Insert1(Pure.VM.OpCode.SUB, null, to);
+            //    _Insert1(Quras.VM.OpCode.SUB, null, to);
 
-            //    _Insert1(Pure.VM.OpCode.XDROP, null, to, null);
+            //    _Insert1(Quras.VM.OpCode.XDROP, null, to, null);
 
             //}
 
             //移除深度临时栈
-            _Insert1(Pure.VM.OpCode.FROMALTSTACK, "endcode", to);
-            _Insert1(Pure.VM.OpCode.DROP, "", to);
+            _Insert1(Quras.VM.OpCode.FROMALTSTACK, "endcode", to);
+            _Insert1(Quras.VM.OpCode.DROP, "", to);
         }
 
     }
