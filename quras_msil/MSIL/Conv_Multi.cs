@@ -776,7 +776,7 @@ namespace Quras.Compiler.MSIL
 
                 //a syscall
                 {
-                    var bytes = Encoding.UTF8.GetBytes("Module.Runtime.Notify");
+                    var bytes = Encoding.UTF8.GetBytes("Quras.Runtime.Notify");
                     byte[] outbytes = new byte[bytes.Length + 1];
                     outbytes[0] = (byte)bytes.Length;
                     Array.Copy(bytes, 0, outbytes, 1, bytes.Length);
