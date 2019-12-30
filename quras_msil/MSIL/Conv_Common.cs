@@ -8,7 +8,7 @@ namespace Quras.Compiler.MSIL
     /// </summary>
     public partial class ModuleConverter
     {
-        private QurasCode _Insert1(Quras.VM.OpCode code, string comment, NeoMethod to, byte[] data = null)
+        private QurasCode _Insert1(Quras.VM.OpCode code, string comment, QurasMethod to, byte[] data = null)
         {
             QurasCode _code = new QurasCode();
             int startaddr = addr;
@@ -31,7 +31,7 @@ namespace Quras.Compiler.MSIL
             return _code;
         }
 
-        private QurasCode _InsertPush(byte[] data, string comment, NeoMethod to)
+        private QurasCode _InsertPush(byte[] data, string comment, QurasMethod to)
         {
             if (data.Length == 0) return _Insert1(Quras.VM.OpCode.PUSH0, comment, to);
             if (data.Length <= 75) return _Insert1((Quras.VM.OpCode)data.Length, comment, to, data);
@@ -58,7 +58,7 @@ namespace Quras.Compiler.MSIL
             return _Insert1(code, comment, to, bytes);
         }
 
-        private QurasCode _InsertPush(int i, string comment, NeoMethod to)
+        private QurasCode _InsertPush(int i, string comment, QurasMethod to)
         {
             if (i == 0) return _Insert1(Quras.VM.OpCode.PUSH0, comment, to);
             if (i == -1) return _Insert1(Quras.VM.OpCode.PUSHM1, comment, to);
@@ -66,7 +66,7 @@ namespace Quras.Compiler.MSIL
             return _InsertPush(((BigInteger)i).ToByteArray(), comment, to);
         }
 
-        private QurasCode _Convert1by1(Quras.VM.OpCode code, OpCode src, NeoMethod to, byte[] data = null)
+        private QurasCode _Convert1by1(Quras.VM.OpCode code, OpCode src, QurasMethod to, byte[] data = null)
         {
             QurasCode _code = new QurasCode();
             int startaddr = addr;
@@ -94,7 +94,7 @@ namespace Quras.Compiler.MSIL
             return _code;
         }
 
-        private QurasCode _ConvertPush(byte[] data, OpCode src, NeoMethod to)
+        private QurasCode _ConvertPush(byte[] data, OpCode src, QurasMethod to)
         {
             if (data.Length == 0) return _Convert1by1(Quras.VM.OpCode.PUSH0, src, to);
             if (data.Length <= 75) return _Convert1by1((Quras.VM.OpCode)data.Length, src, to, data);
@@ -121,14 +121,14 @@ namespace Quras.Compiler.MSIL
             return _Convert1by1(code, src, to, bytes);
         }
 
-        private QurasCode _ConvertPush(long i, OpCode src, NeoMethod to)
+        private QurasCode _ConvertPush(long i, OpCode src, QurasMethod to)
         {
             if (i == 0) return _Convert1by1(Quras.VM.OpCode.PUSH0, src, to);
             if (i == -1) return _Convert1by1(Quras.VM.OpCode.PUSHM1, src, to);
             if (i > 0 && i <= 16) return _Convert1by1((Quras.VM.OpCode)(byte)i + 0x50, src, to);
             return _ConvertPush(((BigInteger)i).ToByteArray(), src, to);
         }
-        private int _ConvertPushI8WithConv(ILMethod from, long i, OpCode src, NeoMethod to)
+        private int _ConvertPushI8WithConv(ILMethod from, long i, OpCode src, QurasMethod to)
         {
             var next = from.GetNextCodeAddr(src.addr);
             var code = from.body_Codes[next].code;
@@ -184,7 +184,7 @@ namespace Quras.Compiler.MSIL
             }
 
         }
-        private int _ConvertPushI4WithConv(ILMethod from, int i, OpCode src, NeoMethod to)
+        private int _ConvertPushI4WithConv(ILMethod from, int i, OpCode src, QurasMethod to)
         {
             var next = from.GetNextCodeAddr(src.addr);
             var code = from.body_Codes[next].code;
@@ -228,7 +228,7 @@ namespace Quras.Compiler.MSIL
             }
 
         }
-        private void _insertBeginCode(ILMethod from, NeoMethod to)
+        private void _insertBeginCode(ILMethod from, QurasMethod to)
         {
             ////压入深度临时栈
             //_Insert1(Quras.VM.OpCode.DEPTH, "record depth.", to);
@@ -262,7 +262,7 @@ namespace Quras.Compiler.MSIL
             }
         }
 
-        private void _insertEndCode(ILMethod from, NeoMethod to, OpCode src)
+        private void _insertEndCode(ILMethod from, QurasMethod to, OpCode src)
         {
             ////占位不谢
             _Convert1by1(Quras.VM.OpCode.NOP, src, to);

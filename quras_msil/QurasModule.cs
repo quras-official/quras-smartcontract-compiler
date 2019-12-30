@@ -30,8 +30,9 @@ namespace Quras.Compiler
             //并计算 this.codehash            byte[]
         }
         public string mainMethod;
-        public Dictionary<string, NeoMethod> mapMethods = new Dictionary<string, NeoMethod>();
+        public Dictionary<string, QurasMethod> mapMethods = new Dictionary<string, QurasMethod>();
         public Dictionary<string, QurasEvent> mapEvents = new Dictionary<string, QurasEvent>();
+        public Dictionary<string, QurasField> mapFields = new Dictionary<string, QurasField>();
         //public Dictionary<string, byte[]> codes = new Dictionary<string, byte[]>();
         //public byte[] GetScript(byte[] script_hash)
         //{
@@ -84,7 +85,7 @@ namespace Quras.Compiler
         public Dictionary<string, object> staticfields = new Dictionary<string, object>();
        
     }
-    public class NeoMethod
+    public class QurasMethod
     {
         public string _namespace;
         public string name;
@@ -229,6 +230,18 @@ namespace Quras.Compiler
         public void FromJson(MyJson.JsonNode_Object json)
         {
 
+        }
+    }
+    public class QurasField : QurasParam
+    {
+        public QurasField(string name, string type, int index) : base(name, type)
+        {
+            this.index = index;
+        }
+        public int index
+        {
+            get;
+            private set;
         }
     }
     public class QurasParam

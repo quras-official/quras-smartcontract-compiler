@@ -64,7 +64,7 @@ namespace Quras.Compiler.MSIL
         ILogger logger;
         public QurasModule outModule;
         ILModule inModule;
-        public Dictionary<ILMethod, NeoMethod> methodLink = new Dictionary<ILMethod, NeoMethod>();
+        public Dictionary<ILMethod, QurasMethod> methodLink = new Dictionary<ILMethod, QurasMethod>();
         public QurasModule Convert(ILModule _in)
         {
             this.inModule = _in;
@@ -82,7 +82,7 @@ namespace Quras.Compiler.MSIL
                     if (m.Value.method == null) continue;
                     if (m.Value.method.IsAddOn || m.Value.method.IsRemoveOn)
                         continue;//event 自动生成的代码，不要
-                    NeoMethod nm = new NeoMethod();
+                    QurasMethod nm = new QurasMethod();
                     if (m.Key.Contains(".cctor"))
                     {
                         CctorSubVM.Parse(m.Value, this.outModule);
@@ -119,6 +119,12 @@ namespace Quras.Compiler.MSIL
                         ae.paramtypes = e.Value.paramtypes;
                         outModule.mapEvents[ae.name] = ae;
                     }
+                    else if (e.Value.field.IsStatic)
+                    {
+                        var _fieldindex = outModule.mapFields.Count;
+                        var field = new QurasField(e.Key, e.Value.type, _fieldindex);
+                        outModule.mapFields[e.Value.field.FullName] = field;
+                    }
                 }
             }
 
@@ -154,7 +160,7 @@ namespace Quras.Compiler.MSIL
                             var type = m.Value.method.ReturnType.Resolve();
                             foreach (var i in type.Interfaces)
                             {
-                                if (i.Name == "IApiInterface")
+                                if (i.InterfaceType.Name == "IApiInterface")
                                 {
                                     nm.returntype = "IInteropInterface";
                                 }
@@ -196,7 +202,7 @@ namespace Quras.Compiler.MSIL
 
                 if (key.Contains("::Main("))
                 {
-                    NeoMethod m = outModule.mapMethods[key];
+                    QurasMethod m = outModule.mapMethods[key];
                     if (m.inSmartContract)
                     {
                         foreach (var l in this.methodLink)
@@ -289,7 +295,7 @@ namespace Quras.Compiler.MSIL
             }
         }
 
-        private void ConvertMethod(ILMethod from, NeoMethod to)
+        private void ConvertMethod(ILMethod from, QurasMethod to)
         {
 
 
@@ -381,7 +387,7 @@ namespace Quras.Compiler.MSIL
             var n = BitConverter.ToInt32(target, 0);
             return n;
         }
-        private void ConvertAddrInMethod(NeoMethod to)
+        private void ConvertAddrInMethod(QurasMethod to)
         {
             foreach (var c in to.body_Codes.Values)
             {
@@ -405,7 +411,7 @@ namespace Quras.Compiler.MSIL
                 }
             }
         }
-        private int ConvertCode(ILMethod method, OpCode src, NeoMethod to)
+        private int ConvertCode(ILMethod method, OpCode src, QurasMethod to)
         {
             int skipcount = 0;
             switch (src.code)

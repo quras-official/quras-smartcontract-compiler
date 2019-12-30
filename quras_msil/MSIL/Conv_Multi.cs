@@ -10,7 +10,7 @@ namespace Quras.Compiler.MSIL
     /// </summary>
     public partial class ModuleConverter
     {
-        private void _ConvertStLoc(ILMethod method, OpCode src, NeoMethod to, int pos)
+        private void _ConvertStLoc(ILMethod method, OpCode src, QurasMethod to, int pos)
         {
 
             //get array
@@ -57,7 +57,7 @@ namespace Quras.Compiler.MSIL
             //_Convert1by1(Quras.VM.OpCode.DROP, null, to);
 
         }
-        private void _ConvertLdLoc(ILMethod method, OpCode src, NeoMethod to, int pos)
+        private void _ConvertLdLoc(ILMethod method, OpCode src, QurasMethod to, int pos)
         {
             //get array
             _Convert1by1(Quras.VM.OpCode.FROMALTSTACK, src, to);
@@ -69,7 +69,7 @@ namespace Quras.Compiler.MSIL
 
 
         }
-        private void _ConvertLdLocA(ILMethod method, OpCode src, NeoMethod to, int pos)
+        private void _ConvertLdLocA(ILMethod method, OpCode src, QurasMethod to, int pos)
         {//这有两种情况，我们需要先判断这个引用地址是拿出来干嘛的
 
             var n1 = method.body_Codes[method.GetNextCodeAddr(src.addr)];
@@ -88,7 +88,7 @@ namespace Quras.Compiler.MSIL
                 _ConvertLdLoc(method, src, to, pos);
             }
         }
-        private void _ConvertCastclass(ILMethod method, OpCode src, NeoMethod to)
+        private void _ConvertCastclass(ILMethod method, OpCode src, QurasMethod to)
         {
             var type = src.tokenUnknown as Mono.Cecil.TypeReference;
             try
@@ -111,7 +111,7 @@ namespace Quras.Compiler.MSIL
 
             }
         }
-        private void _ConvertLdArg(ILMethod method, OpCode src, NeoMethod to, int pos)
+        private void _ConvertLdArg(ILMethod method, OpCode src, QurasMethod to, int pos)
         {
             try
             {
@@ -167,7 +167,7 @@ namespace Quras.Compiler.MSIL
             ////pick
             //_Convert1by1(Quras.VM.OpCode.PICK, null, to);
         }
-        private void _ConvertStArg(OpCode src, NeoMethod to, int pos)
+        private void _ConvertStArg(OpCode src, QurasMethod to, int pos)
         {
             //get array
             _Convert1by1(Quras.VM.OpCode.DUPFROMALTSTACK, src, to);
@@ -330,7 +330,7 @@ namespace Quras.Compiler.MSIL
             return false;
 
         }
-        public bool IsNotifyCall(Mono.Cecil.MethodDefinition defs, Mono.Cecil.MethodReference refs, NeoMethod to, out string name)
+        public bool IsNotifyCall(Mono.Cecil.MethodDefinition defs, Mono.Cecil.MethodReference refs, QurasMethod to, out string name)
         {
 
             name = to.lastsfieldname;
@@ -373,7 +373,7 @@ namespace Quras.Compiler.MSIL
             name = "Notify";
             return false;
         }
-        private int _ConvertCall(OpCode src, NeoMethod to)
+        private int _ConvertCall(OpCode src, QurasMethod to)
         {
             Mono.Cecil.MethodReference refs = src.tokenUnknown as Mono.Cecil.MethodReference;
 
@@ -814,7 +814,7 @@ namespace Quras.Compiler.MSIL
             var _method = type.methods[method.FullName];
             try
             {
-                NeoMethod nm = new NeoMethod();
+                QurasMethod nm = new QurasMethod();
                 if (method.FullName.Contains(".cctor"))
                 {
                     CctorSubVM.Parse(_method, this.outModule);
@@ -860,7 +860,7 @@ namespace Quras.Compiler.MSIL
                 }
             }
         }
-        private int _ConvertNewArr(ILMethod method, OpCode src, NeoMethod to)
+        private int _ConvertNewArr(ILMethod method, OpCode src, QurasMethod to)
         {
             var type = src.tokenType;
             if (type != "System.Byte")
@@ -1023,7 +1023,7 @@ namespace Quras.Compiler.MSIL
             return 0;
 
         }
-        private int _ConvertInitObj(OpCode src, NeoMethod to)
+        private int _ConvertInitObj(OpCode src, QurasMethod to)
         {
             var type = (src.tokenUnknown as Mono.Cecil.TypeReference).Resolve();
             _Convert1by1(Quras.VM.OpCode.NOP, src, to);//空白
@@ -1078,7 +1078,7 @@ namespace Quras.Compiler.MSIL
             //_Convert1by1(Quras.VM.OpCode.DROP, null, to);
             return 0;
         }
-        private int _ConvertNewObj(OpCode src, NeoMethod to)
+        private int _ConvertNewObj(OpCode src, QurasMethod to)
         {
             var _type = (src.tokenUnknown as Mono.Cecil.MethodReference);
             if (_type.FullName == "System.Void System.Numerics.BigInteger::.ctor(System.Byte[])")
@@ -1130,7 +1130,7 @@ namespace Quras.Compiler.MSIL
             return 0;
         }
 
-        private int _ConvertStfld(ILMethod method, OpCode src, NeoMethod to)
+        private int _ConvertStfld(ILMethod method, OpCode src, QurasMethod to)
         {
             var field = (src.tokenUnknown as Mono.Cecil.FieldReference).Resolve();
             var type = field.DeclaringType;
@@ -1147,7 +1147,7 @@ namespace Quras.Compiler.MSIL
             return 0;
         }
 
-        private int _ConvertLdfld(OpCode src, NeoMethod to)
+        private int _ConvertLdfld(OpCode src, QurasMethod to)
         {
             var field = (src.tokenUnknown as Mono.Cecil.FieldReference).Resolve();
             var type = field.DeclaringType;
