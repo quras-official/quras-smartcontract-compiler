@@ -505,8 +505,10 @@ namespace Quras.Compiler.MSIL
                     }
                     else
                     {
-                        _Convert1by1(Quras.VM.OpCode.INVERT, src, to);
-                        _Insert1(Quras.VM.OpCode.EQUAL, "", to);
+                        //_Convert1by1(Quras.VM.OpCode.INVERT, src, to);
+                        //_Insert1(Quras.VM.OpCode.EQUAL, "", to);
+                        _Convert1by1(Quras.VM.OpCode.EQUAL, src, to);
+                        _Convert1by1(Quras.VM.OpCode.NOT, null, to);
                     }
                     ////各类!=指令
                     ////有可能有一些会特殊处理，故还保留独立判断
@@ -1107,10 +1109,14 @@ namespace Quras.Compiler.MSIL
                     {
                         if (attr.AttributeType.Name == "OpCodeAttribute")
                         {
-                            //var _type = attr.ConstructorArguments[0].Type;
                             var value = (byte)attr.ConstructorArguments[0].Value;
+                            byte[] OpData = null;
+                            if (attr.ConstructorArguments.Count > 1)
+                            {
+                                OpData = HexString2Bytes((string)attr.ConstructorArguments[1].Value);
+                            }
                             Quras.VM.OpCode v = (Quras.VM.OpCode)value;
-                            _Insert1(v, null, to);
+                            _Convert1by1(v, src, to, OpData);
                             return 0;
                         }
 
@@ -1158,6 +1164,16 @@ namespace Quras.Compiler.MSIL
             _Convert1by1(Quras.VM.OpCode.PICKITEM, null, to);//修改值
 
             return 0;
+        }
+
+        static byte[] HexString2Bytes(string str)
+        {
+            byte[] outd = new byte[str.Length / 2];
+            for (var i = 0; i < str.Length / 2; i++)
+            {
+                outd[i] = byte.Parse(str.Substring(i * 2, 2), System.Globalization.NumberStyles.HexNumber);
+            }
+            return outd;
         }
     }
 }
